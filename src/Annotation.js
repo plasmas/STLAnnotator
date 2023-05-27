@@ -1,9 +1,12 @@
 class Annotation {
     constructor(id) {
+        // Vector3[] that makes up the shape drawn by the user
         this.points = []
+        // id or key
         this.id = id
         this.description = "Annotation " + id
         this.color = generateRandomColor();
+        // whether the user is done drawing the shape
         this.complete = false;
     }
 

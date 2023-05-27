@@ -15,9 +15,12 @@ import Model from "./Model";
 
 
 export default function App() {
+  // the model loaded
   const [model, setModel] = useState(null);
+  // list of annotations
   const [annotations, setAnnotations] = useState([]);
 
+  // handle STL file upload
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -30,6 +33,7 @@ export default function App() {
     }
   };
 
+  // process uploaded STL file
   const loadModel = (data) => {
     const loader = new STLLoader();
     const geometry = loader.parse(data);
@@ -39,17 +43,19 @@ export default function App() {
     setModel(mesh);
   };
 
+  // add point to annotation if condition is met
+  // triggered when mouse pointer is over the model
   const addPoint = (point, altKey) => {
-    // alt key not pressed, and there are annotations, and the last annotation is not complete
     if (!altKey) {
+      // alt key not pressed
       if (annotations.length > 0 && !annotations[annotations.length - 1].complete) {
-        // last not complete
+        // last annotation not yet complete
         const lastAnnotation = annotations[annotations.length - 1];
         lastAnnotation.complete = true;
         setAnnotations([...annotations.slice(0, annotations.length - 1), lastAnnotation]);
         return;
       } else {
-        // last complete
+        // last complete, nothing to do
         return;
       }
     } else {
@@ -57,12 +63,14 @@ export default function App() {
       if (annotations.length > 0 && !annotations[annotations.length - 1].complete) {
         // last not complete
         const lastAnnotation = annotations[annotations.length - 1];
+        // appending point to last annotation
         lastAnnotation.addPoint(point);
         setAnnotations([...annotations.slice(0, annotations.length - 1), lastAnnotation]);
         return;
       } else {
         // last complete
         const id = Math.max(...annotations.map((annotation) => annotation.id), 0) + 1;
+        // generate new annotation
         const newAnnotation = new Annotation(id);
         newAnnotation.addPoint(point);
         setAnnotations([...annotations, newAnnotation]);
@@ -71,6 +79,7 @@ export default function App() {
     }
   }
 
+  // handles deletion action on an annotation
   const handleDelete = (annotationId) => {
     setAnnotations(annotations.filter((annotation) => annotation.id !== annotationId));
   }
